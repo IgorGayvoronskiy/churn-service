@@ -25,6 +25,11 @@ class Features(BaseModel):
     avg_watch_time_per_day: float = Field(ge=0)
     favorite_genre: str
 
+class BatchFeatures(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    rows: list[Features] = Field(min_length=1, max_length=1000)
+
 class Prediction(BaseModel):
     request_id: str
     score: float
@@ -57,8 +62,6 @@ def ready():
     
     return {"status": "ready"}
 
-
-
 @app.post("/v1/predict")
 def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     t0 = time.perf_counter()
@@ -75,3 +78,28 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     churn = score >= app.state.meta["threshold"]
 
     return Prediction(score=score, churn=churn, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms)
+
+@app.post("/v1/predict/batch")
+def predict(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
+    t0 = time.perf_counter()
+
+    payloads = [row.model_dump() for row in x.rows]
+
+    frame = pd.DataFrame(payloads).reindex(columns=app.state.meta["features"])
+
+    scores = app.state.model.predict_proba(frame)[:, 1]
+
+    latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+
+    results = []
+    for payload, score in zip(payloads, scores):
+        request_id = str(uuid.uuid4())
+        score = float(score)
+        
+        bg.add_task(db.save_prediction, request_id, payload, score, app.state.version, latency_ms, 200)
+
+        churn = score >= app.state.meta["threshold"]
+        
+        results.append(Prediction(score=score, churn=churn, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms))
+
+    return results

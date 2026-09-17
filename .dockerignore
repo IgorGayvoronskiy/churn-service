@@ -20,3 +20,7 @@ run100_exceptions.csv
 run100_failures.csv
 run100_stats_history.csv
 run100_stats.csv
+README.md
+good.json
+batch_good.json
+measure_batch.py
