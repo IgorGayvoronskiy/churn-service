@@ -16,3 +16,14 @@
   <img width="1260" height="103" alt="image_2026-09-15_21-33-48" src="https://github.com/user-attachments/assets/bad03a5a-3dcc-4851-9993-4927b57de9ae" />
 - k9s
   <img width="1230" height="763" alt="image_2026-09-15_21-38-50" src="https://github.com/user-attachments/assets/6a221f03-3eb5-4458-a260-73bb9b7f7183" />
+
+# Звёздочка 1
+| Прогон | Метод | Endpoint | RPS | Median, ms | p95, ms | Max, ms | Доля ошибок |
+|---:|:---:|:---|---:|---:|---:|---:|---:|
+| 10 | GET | `/health` | 0.79 | 4 | 9 | 19.19 | 0.00% |
+| 10 | POST | `/v1/predict` | 4.22 | 7 | 15 | 108.30 | 0.00% |
+| 50 | GET | `/health` | 4.39 | 5 | 31 | 64.28 | 0.00% |
+| 50 | POST | `/v1/predict` | 19.85 | 9 | 27 | 86.27 | 0.00% |
+| 100 | GET | `/health` | 7.72 | 5 | 14 | 125.48 | 0.00% |
+| 100 | POST | `/v1/predict` | 41.22 | 9 | 30 | 202.71 | 0.00% |
+
