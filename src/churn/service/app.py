@@ -1,13 +1,15 @@
 import time
 import uuid
+from contextlib import asynccontextmanager
+
 import joblib
 import pandas as pd
-
-from contextlib import asynccontextmanager
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel, Field
+
 from churn import db
 from churn.config import settings
+
 
 class Features(BaseModel):
     model_config = {"extra": "forbid"}
@@ -80,7 +82,7 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     return Prediction(score=score, churn=churn, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms)
 
 @app.post("/v1/predict/batch")
-def predict(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
+def predict_batch(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
     t0 = time.perf_counter()
 
     payloads = [row.model_dump() for row in x.rows]
