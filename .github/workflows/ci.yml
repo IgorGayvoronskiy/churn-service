@@ -114,8 +114,35 @@ jobs:
 
       - name: диагностика
         if: failure()
-
         run: |
+          echo "::group::Поды"
           kubectl get pods -o wide
-          kubectl describe deploy/churn-service | tail -20
-          kubectl logs deploy/churn-service --tail=30 || true
+          echo "::endgroup::"
+
+          echo "::group::События кластера (по времени)"
+          kubectl get events --sort-by=.lastTimestamp
+          echo "::endgroup::"
+
+          echo "::group::Деплойменты"
+          kubectl get deploy -o wide
+          echo "::endgroup::"
+
+          for deploy in churn-service postgres; do
+            echo "::group::describe deploy/$deploy"
+            kubectl describe deploy/"$deploy" || true
+            echo "::endgroup::"
+          done
+
+          for pod in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
+            echo "::group::describe pod/$pod (события конкретного пода)"
+            kubectl describe pod/"$pod" || true
+            echo "::endgroup::"
+
+            echo "::group::logs pod/$pod (текущий контейнер)"
+            kubectl logs pod/"$pod" --all-containers --tail=50 || true
+            echo "::endgroup::"
+
+            echo "::group::logs pod/$pod --previous (упавший перед рестартом контейнер)"
+            kubectl logs pod/"$pod" --all-containers --previous --tail=50 || true
+            echo "::endgroup::"
+          done
