@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     model_path: str = "artifact/churn_model.joblib"
     database_url: str | None = None

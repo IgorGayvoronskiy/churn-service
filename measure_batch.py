@@ -1,4 +1,5 @@
 import statistics
+
 import requests
 
 URL = "http://localhost:8000"
@@ -6,7 +7,7 @@ URL = "http://localhost:8000"
 N = 10
 
 def measure(endpoint: str, filename: str):
-    with open(filename, "r", encoding="utf-8") as f:
+    with open(filename, encoding="utf-8") as f:
         payload = __import__("json").load(f)
 
     latencies = []
