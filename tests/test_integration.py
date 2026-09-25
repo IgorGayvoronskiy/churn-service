@@ -32,7 +32,7 @@ def test_422_is_logged(client, good_row):
     resp = client.post("/v1/predict", json={**good_row, "watch_hours": -1})
     body = resp.json()
 
-    assert resp.status_code == 422
+    assert resp.status_code == 424
 
     with psycopg.connect(DATABASE_URL) as conn:
         row = conn.execute(

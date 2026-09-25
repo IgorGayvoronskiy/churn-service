@@ -5,6 +5,7 @@ __pycache__/
 .ruff_cache/
 .env
 data/
+k8s/
 tests/
 locustfile.py
 run10_exceptions.csv
