@@ -66,7 +66,7 @@ def test_batch_prediction_is_logged(client, good_row):
     assert len(db_rows) == len(body)
 
     by_id = {resp_row["request_id"]: resp_row for resp_row in body}
-    assert all(db_row[0] in by_id for db_row in db_rows)
+    assert all(str(db_row[0]) in by_id for db_row in db_rows)
 
     assert [db_row[1] for db_row in db_rows] == sorted(row["device"] for row in good_rows)
     assert all(db_row[3] == 200 for db_row in db_rows)
