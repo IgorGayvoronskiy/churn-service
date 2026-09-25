@@ -26,9 +26,11 @@ def test_extra_field_is_422(client, good_row):
     r = client.post("/v1/predict", json={**good_row, "hacker_field": 1})
     assert r.status_code == 422
 
+
 def test_age_zero_is_422(client, good_row):
     r = client.post("/v1/predict", json={**good_row, "age": 0})
     assert r.status_code == 422
+
 
 def test_zero_profiles_is_422(client, good_row):
     r = client.post(
@@ -37,12 +39,14 @@ def test_zero_profiles_is_422(client, good_row):
     )
     assert r.status_code == 422
 
+
 def test_zero_watch_hours_is_valid(client, good_row):
     r = client.post(
         "/v1/predict",
         json={**good_row, "watch_hours": 0}
     )
     assert r.status_code == 200
+
 
 def test_zero_last_login_days_is_valid(client, good_row):
     r = client.post(
@@ -51,12 +55,14 @@ def test_zero_last_login_days_is_valid(client, good_row):
     )
     assert r.status_code == 200
 
+
 def test_zero_avg_watch_time_is_valid(client, good_row):
     r = client.post(
         "/v1/predict",
         json={**good_row, "avg_watch_time_per_day": 0}
     )
     assert r.status_code == 200
+
 
 @pytest.mark.parametrize(
     "field",
