@@ -20,7 +20,7 @@ spec:
             - containerPort: 8000
           envFrom:
           - configMapRef: {name: churn-config}
-          - secretRef: {name: churn-secrets}
+          - secretRef: {name: churn-secrets-bad}
           startupProbe:
             httpGet: {path: /health, port: 8000}
             failureThreshold: 30
