@@ -121,8 +121,14 @@ jobs:
           jq -e '.model_version | test("^churn-v[0-9]+$")' health.json
 
           # 2. проверка ответа (число от 0 до 1)
-          curl --fail -s -X POST -H "$H" "$U/v1/predict" \
-            -H "Content-Type: application/json" -d @good.json | tee pred.json; echo
+          curl -v -X POST -H "$H" "$U/v1/predict" \
+            -H "Content-Type: application/json" \
+            -d @good.json \
+            -o pred.json
+          
+          echo "=== predict response ==="
+          cat pred.json
+          
           jq -e '(.score | type == "number") and .score >= 0 and .score <= 1' pred.json
 
           # 3. в базе ровно одна строка с этим request_id
