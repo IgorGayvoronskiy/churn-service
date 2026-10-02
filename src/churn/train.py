@@ -10,20 +10,21 @@ import json
 import os
 from pathlib import Path
 
+import catboost
 import matplotlib.pyplot as plt
 import mlflow
 import pandas as pd
 import sklearn
-import catboost
+from catboost import CatBoostClassifier, Pool
 from mlflow import MlflowClient
 from mlflow.exceptions import MlflowException
-from catboost import CatBoostClassifier, Pool
 from sklearn.metrics import (
-    roc_auc_score,
-    precision_recall_curve,
-    accuracy_score, precision_score,
-    recall_score,
+    accuracy_score,
     f1_score,
+    precision_recall_curve,
+    precision_score,
+    recall_score,
+    roc_auc_score,
 )
 from sklearn.model_selection import train_test_split
 
@@ -41,8 +42,22 @@ TOP_N_FEATURES = 10
 MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.0002"))
 SEED = 42
 
-NUMERIC = ["age", "watch_hours", "last_login_days", "monthly_fee", "number_of_profiles", "avg_watch_time_per_day"]
-CATEGORICAL = ["gender", "subscription_type", "region", "device", "payment_method", "favorite_genre"]
+NUMERIC = [
+    "age",
+    "watch_hours",
+    "last_login_days",
+    "monthly_fee",
+    "number_of_profiles",
+    "avg_watch_time_per_day"
+    ]
+CATEGORICAL = [
+    "gender",
+    "subscription_type",
+    "region",
+    "device",
+    "payment_method",
+    "favorite_genre"
+    ]
 TARGET = "churned"
 
 def load_data(path: str) -> pd.DataFrame:
@@ -208,8 +223,10 @@ def main() -> dict:
     if promoted:
         client.set_registered_model_alias(MODEL_NAME, "champion", version)
 
-    result = {"run_id": run.info.run_id, "version": version, "roc_auc": round(metrics.get("ROC-AUC"), 4),
-              "champion_before": old_version, "champion_auc_before": old_auc, "promoted": promoted}
+    result = {"run_id": run.info.run_id, "version": version,
+              "roc_auc": round(metrics.get("ROC-AUC"), 4),
+              "champion_before": old_version, "champion_auc_before": old_auc,
+              "promoted": promoted}
     print(json.dumps(result, ensure_ascii=False))
     xcom = Path("/airflow/xcom")
     if xcom.is_dir():
