@@ -3,7 +3,6 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 
-import joblib
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
@@ -14,6 +13,7 @@ from starlette.background import BackgroundTask
 
 from churn import db
 from churn.config import settings
+from churn.model_store import load_model
 
 
 class Features(BaseModel):
@@ -49,11 +49,8 @@ class Prediction(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    bundle = joblib.load(settings.model_path)
 
-    app.state.model = bundle['model']
-    app.state.meta = bundle['metadata']
-    app.state.version = bundle['metadata']['model_version']
+    app.state.model, app.state.meta, app.state.version = load_model()
 
     db.init()
     yield

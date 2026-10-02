@@ -8,6 +8,7 @@ data/
 k8s/
 tests/
 locustfile.py
+catboost_info/
 run10_exceptions.csv
 run10_failures.csv
 run10_stats_history.csv

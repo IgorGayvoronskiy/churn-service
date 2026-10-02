@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: churn-service:1.0
+          image: churn-service:2.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
