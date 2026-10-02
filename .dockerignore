@@ -7,6 +7,8 @@ __pycache__/
 data/
 k8s/
 tests/
+platform/
+notebooks/
 locustfile.py
 catboost_info/
 run10_exceptions.csv
@@ -22,6 +24,7 @@ run100_failures.csv
 run100_stats_history.csv
 run100_stats.csv
 README.md
+hw2.md
 good.json
 batch_good.json
 measure_batch.py
