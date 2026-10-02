@@ -59,7 +59,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: [self-hosted, kind]
     concurrency: {group: deploy-kind}
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     permissions: {contents: read, packages: read}
 
