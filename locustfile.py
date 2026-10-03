@@ -4,6 +4,10 @@ from locust import HttpUser, between, task
 class ChurnServiceUser(HttpUser):
     wait_time = between(1, 3)
 
+    def on_start(self):
+        self.client.headers["Host"] = "churn-service.localhost"
+
+
     @task(5)
     def predict(self):
         payload = {
