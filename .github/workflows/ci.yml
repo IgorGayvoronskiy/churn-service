@@ -64,7 +64,7 @@ jobs:
     permissions: {contents: read, packages: read}
 
     env:
-      KIND_CLUSTER: "churn-service"
+      KIND_CLUSTER: "churn-service-wrong"
       INGRESS_PORT: "30080"
       INGRESS_HOST: churn-service.localhost
 
