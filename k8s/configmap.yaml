@@ -7,4 +7,4 @@ data:
   MODEL_PATH: artifact/churn_model.joblib
   MLFLOW_TRACKING_URI: http://mlflow.mlops:5000
   MODEL_NAME: churn
-  MODEL_ALIAS: wrong_alias
+  MODEL_ALIAS: champion
