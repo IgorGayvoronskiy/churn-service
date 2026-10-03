@@ -171,7 +171,7 @@ def main() -> dict:
     data_md5 = file_md5(DATA_PATH)
     X, y = prepare_features(load_data(DATA_PATH))
     features = NUMERIC + CATEGORICAL
-    X_train, X_val, X_test, y_train, y_val, y_test = split_data(X[features], y)
+    X_train, X_val, X_test, y_train, y_val, y_test = split_data(X, y)
 
     model = train_catboost(X_train, y_train, X_val, y_val, cat_features=CATEGORICAL)
     metrics = evaluate(model, X_test, y_test)
