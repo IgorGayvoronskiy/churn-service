@@ -122,7 +122,7 @@ jobs:
           jq -e '.model_version | test("^churn-v[0-9]+$")' health.json
 
           # 2. проверка ответа (число от 0 до 1)
-          curl --fail-with-body -sS -X POST -H "$H" "$U/v1/predict" \
+          curl --fail-with-body -sS --retry-all-errors -X POST -H "$H" "$U/v1/predict" \
             -H "Content-Type: application/json" -d @good.json | tee pred.json; echo
           jq -e '(.score | type == "number") and .score >= 0 and .score <= 1' pred.json
 
