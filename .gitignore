@@ -3,7 +3,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .env
-data/
 catboost_info/
 run10_exceptions.csv
 run10_failures.csv
