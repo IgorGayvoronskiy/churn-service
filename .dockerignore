@@ -28,3 +28,10 @@ hw2.md
 good.json
 batch_good.json
 measure_batch.py
+scripts/
+.dvc/cache/
+.dvc/tmp/
+.dvc/config.local
+datasets/*.csv
+datasets/*.parquet
+pictures/

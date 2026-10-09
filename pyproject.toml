@@ -1,6 +1,6 @@
 [project]
 name = "churn-service"
-version = "0.3.5"
+version = "0.4.0"
 description = "Churn service"
 requires-python=">=3.11,<3.12"
 
@@ -17,6 +17,13 @@ dependencies = [
     "mlflow-skinny>=3.16,<4",
     "skops>=0.11",
     "matplotlib",
+    "prometheus-client>=0.21",
+    "prometheus-fastapi-instrumentator>=8",
+    "implicit>=0.7.3",
+    "pandera>=0.33.1",
+    "scipy>=1.17.1",
+    "pyarrow>=25.0.1",
+    "dvc[s3]>=3.67.1",
 ]
 
 [dependency-groups]

@@ -4,6 +4,7 @@ __pycache__/
 .ruff_cache/
 .env
 catboost_info/
+*.pyc
 run10_exceptions.csv
 run10_failures.csv
 run10_stats_history.csv

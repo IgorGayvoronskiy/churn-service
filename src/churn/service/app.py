@@ -8,12 +8,19 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from prometheus_client import Counter, Gauge, Histogram
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
 from churn import db
 from churn.config import settings
 from churn.model_store import load_model
+
+PREDICTIONS = Counter("churn_predictions_total", "Predictions by class", ["churn"])
+SCORE = Histogram("churn_score", "Predicted churn probability", buckets=[i / 10 for i in range(11)])
+MODEL_INFO = Gauge("churn_model_info", "Model loaded by this pod", ["version"])
+LATENCY_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1)
 
 
 class Features(BaseModel):
@@ -51,6 +58,7 @@ class Prediction(BaseModel):
 async def lifespan(app: FastAPI):
 
     app.state.model, app.state.meta, app.state.version = load_model()
+    MODEL_INFO.labels(app.state.version).set(1)
 
     db.init()
     yield
@@ -58,6 +66,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="churn-service", version="1.0", lifespan=lifespan)
+Instrumentator().instrument(app, latency_lowr_buckets=LATENCY_BUCKETS).expose(app)
 
 @app.get("/health")
 def health():
@@ -147,6 +156,9 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     bg.add_task(db.save_prediction, request_id, payload, score, app.state.version, latency_ms, 200)
 
     churn = score >= app.state.meta["threshold"]
+    
+    PREDICTIONS.labels(str(churn).lower()).inc()
+    SCORE.observe(score)
 
     return Prediction(
         score=score,
@@ -185,7 +197,9 @@ def predict_batch(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
         )
 
         churn = score >= app.state.meta["threshold"]
-        
+        PREDICTIONS.labels(str(churn).lower()).inc()
+        SCORE.observe(score)
+
         results.append(
             Prediction(
                 score=score,
