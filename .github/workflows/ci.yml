@@ -169,5 +169,5 @@ jobs:
             echo "::endgroup::"
           done
 
-      # - name: мониторинг
-      #   run: kubectl apply -f k8s/monitoring/
+      - name: мониторинг
+        run: kubectl apply -f k8s/monitoring/
