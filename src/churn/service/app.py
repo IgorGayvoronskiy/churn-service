@@ -2,6 +2,7 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from typing import Literal
 
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
@@ -20,22 +21,50 @@ from churn.model_store import load_model
 PREDICTIONS = Counter("churn_predictions_total", "Predictions by class", ["churn"])
 SCORE = Histogram("churn_score", "Predicted churn probability", buckets=[i / 10 for i in range(11)])
 MODEL_INFO = Gauge("churn_model_info", "Model loaded by this pod", ["version"])
-LATENCY_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1)
+LATENCY_BUCKETS = (0.003, 0.005, 0.0075, 0.01, 0.015, 0.02, 0.03, 0.05, 0.1, 0.25, 0.5, 1)
+
+FEATURE_BUCKETS = {
+    "age": tuple(range(0, 100, 5)),
+    "watch_hours": (0.5, 1, 2, 5, 10, 15, 20, 30, 40, 50, 75, 110),
+    "last_login_days": (0, 1, 2, 3, 5, 7, 10, 15, 20, 30, 45, 60, 90),
+    "monthly_fee": (8.99, 13.99, 17.99),
+    "number_of_profiles": (1, 2, 3, 4, 5),
+    "avg_watch_time_per_day": (0.25, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 16, 24),
+}
+FEATURE_BUCKETS = {
+    "age": (20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80),
+    "watch_hours": (0.5, 1, 2, 4, 6, 8, 10, 15, 20, 30, 40, 60, 80, 120),
+    "last_login_days": (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 90),
+    "monthly_fee": (8.99, 13.99, 17.99),
+    "number_of_profiles": (1, 2, 3, 4, 5, 10),
+    "avg_watch_time_per_day": (0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1, 2, 5, 10, 24, 100),
+}
+FEATURE_HISTS = {
+    col: Histogram(f"{col}", f"Distribution of {col} in requests", buckets=b)
+    for col, b in FEATURE_BUCKETS.items()
+}
+
+
+def _observe_features(payload: dict) -> None:
+    for col, hist in FEATURE_HISTS.items():
+        value = payload.get(col)
+        if value is not None:
+            hist.observe(value)
 
 
 class Features(BaseModel):
     model_config = {"extra": "forbid"}
 
-    age: int = Field(gt=0)
+    age: int = Field(ge=18)
     gender: str
     subscription_type: str
     watch_hours: float = Field(ge=0)
     last_login_days: int = Field(ge=0)
     region: str
     device: str
-    monthly_fee: float
+    monthly_fee: Literal[8.99, 13.99, 17.99]
     payment_method: str
-    number_of_profiles:	int = Field(gt=0)
+    number_of_profiles:	int = Field(ge=1)
     avg_watch_time_per_day: float = Field(ge=0)
     favorite_genre: str
 
@@ -159,6 +188,7 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     
     PREDICTIONS.labels(str(churn).lower()).inc()
     SCORE.observe(score)
+    _observe_features(payload)
 
     return Prediction(
         score=score,
@@ -199,6 +229,7 @@ def predict_batch(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
         churn = score >= app.state.meta["threshold"]
         PREDICTIONS.labels(str(churn).lower()).inc()
         SCORE.observe(score)
+        _observe_features(payload)
 
         results.append(
             Prediction(
