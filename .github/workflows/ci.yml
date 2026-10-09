@@ -168,5 +168,6 @@ jobs:
             kubectl logs pod/"$pod" --all-containers --previous --tail=50 || true
             echo "::endgroup::"
           done
-      - name: мониторинг
-        run: kubectl apply -f k8s/monitoring/
+
+      # - name: мониторинг
+      #   run: kubectl apply -f k8s/monitoring/

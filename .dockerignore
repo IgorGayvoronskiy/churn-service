@@ -34,3 +34,4 @@ scripts/
 .dvc/config.local
 datasets/*.csv
 datasets/*.parquet
+pictures/
