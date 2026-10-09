@@ -40,7 +40,7 @@ FEATURE_BUCKETS = {
     "avg_watch_time_per_day": (0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1, 2, 5, 10, 24, 100),
 }
 FEATURE_HISTS = {
-    col: Histogram(f"{col}", f"Distribution of {col} in requests", buckets=b)
+    col: Histogram(f"churn_feature_{col}", f"Distribution of {col} in requests", buckets=b)
     for col, b in FEATURE_BUCKETS.items()
 }
 
