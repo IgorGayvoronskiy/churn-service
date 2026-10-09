@@ -71,46 +71,47 @@ data:
           "options": {"orientation": "vertical", "displayMode": "basic", "reduceOptions": {"calcs": ["lastNotNull"]}},
           "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_score_bucket[15m]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
-        {
-          "id": 8, "type": "stat", "title": "Рекомендации: какая версия отвечает",
-          "gridPos": {"x": 0, "y": 21, "w": 8, "h": 5},
-          "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}}},
+                {
+          "id": 8, "type": "heatmap", "title": "Распределение: age",
+          "gridPos": {"x": 0, "y": 21, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "options": {"textMode": "name", "reduceOptions": {"calcs": ["lastNotNull"]}},
-          "targets": [{"refId": "A", "expr": "sum by (model_version) (increase(recs_responses_total[5m])) > 0", "legendFormat": "{{model_version}}", "instant": true}]
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_age_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
         {
-          "id": 9, "type": "stat", "title": "Доля запасного варианта (популярное) за 5 минут",
-          "gridPos": {"x": 8, "y": 21, "w": 8, "h": 5},
-          "fieldConfig": {"defaults": {"unit": "percentunit", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 0.4}, {"color": "red", "value": 0.6}]}}},
+          "id": 9, "type": "heatmap", "title": "Распределение: watch_hours",
+          "gridPos": {"x": 12, "y": 21, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"]}},
-          "targets": [{"refId": "A", "expr": "sum(increase(recs_responses_total{source=\"popular\"}[5m])) / sum(increase(recs_responses_total[5m]))"}]
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_watch_hours_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
         {
-          "id": 10, "type": "stat", "title": "Ответов 503: рекомендации не опубликованы",
-          "gridPos": {"x": 16, "y": 21, "w": 8, "h": 5},
-          "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}},
+          "id": 10, "type": "heatmap", "title": "Распределение: last_login_days",
+          "gridPos": {"x": 0, "y": 29, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"]}},
-          "targets": [{"refId": "A", "expr": "sum(increase(http_requests_total{handler=\"/v1/recommend/{customer_id}\", status=\"5xx\"}[5m])) or vector(0)"}]
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_last_login_days_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
         {
-          "id": 11, "type": "timeseries", "title": "Рекомендации в секунду по источнику",
-          "gridPos": {"x": 0, "y": 26, "w": 12, "h": 8},
+          "id": 11, "type": "heatmap", "title": "Распределение: monthly_fee",
+          "gridPos": {"x": 12, "y": 29, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "fieldConfig": {"defaults": {"unit": "reqps"}},
-          "targets": [{"refId": "A", "expr": "sum by (source) (rate(recs_responses_total[1m]))", "legendFormat": "{{source}}"}]
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_monthly_fee_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
         {
-          "id": 12, "type": "timeseries", "title": "Задержка /v1/recommend",
-          "gridPos": {"x": 12, "y": 26, "w": 12, "h": 8},
+          "id": 12, "type": "heatmap", "title": "Распределение: number_of_profiles",
+          "gridPos": {"x": 0, "y": 37, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "fieldConfig": {"defaults": {"unit": "s"}},
-          "targets": [
-            {"refId": "A", "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{handler=\"/v1/recommend/{customer_id}\"}[1m])))", "legendFormat": "p50"},
-            {"refId": "B", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{handler=\"/v1/recommend/{customer_id}\"}[1m])))", "legendFormat": "p95"}
-          ]
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_number_of_profiles_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
+        },
+        {
+          "id": 13, "type": "heatmap", "title": "Распределение: avg_watch_time_per_day",
+          "gridPos": {"x": 12, "y": 37, "w": 12, "h": 8},
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "options": {"calculate": false, "color": {"mode": "scheme", "scheme": "Spectral"}, "cellGap": 1},
+          "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_feature_avg_watch_time_per_day_bucket[$__rate_interval]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         }
       ]
     }
