@@ -71,7 +71,7 @@ data:
           "options": {"orientation": "vertical", "displayMode": "basic", "reduceOptions": {"calcs": ["lastNotNull"]}},
           "targets": [{"refId": "A", "expr": "sum by (le) (increase(churn_score_bucket[15m]))", "format": "heatmap", "legendFormat": "{{le}}"}]
         },
-                {
+        {
           "id": 8, "type": "heatmap", "title": "Распределение: age",
           "gridPos": {"x": 0, "y": 21, "w": 12, "h": 8},
           "datasource": {"type": "prometheus", "uid": "prometheus"},

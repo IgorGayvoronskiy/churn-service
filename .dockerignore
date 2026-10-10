@@ -4,7 +4,8 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .env
-data/
+data/*.csv
+data/*.parquet
 k8s/
 tests/
 platform/
@@ -35,3 +36,4 @@ scripts/
 datasets/*.csv
 datasets/*.parquet
 pictures/
+dags/

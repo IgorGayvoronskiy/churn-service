@@ -1,10 +1,10 @@
 """Поток запросов к сервису из строк датасета, чтобы на дашборде Grafana было что смотреть.
 
-  uv run python scripts/traffic.py --url http://churn.localhost --rps 5 --bad 0.05 --recs 0.3
+  uv run python scripts/traffic.py --url http://churn-service.localhost --rps 5 --bad 0.05
 
 Через Ingress запросы делятся между подами и переживают rollout. Через port-forward нет:
 он привязан к одному поду и обрывается, когда этот под удаляют.
---bad   доля заведомо плохих запросов (tenure = -1), они дают 422 на графике.
+--bad доля заведомо плохих запросов (age = -1), они дают 422 на графике.
 """
 import argparse
 import json
@@ -16,7 +16,7 @@ import urllib.request
 import pandas as pd
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--url", default="http://churn.localhost")
+parser.add_argument("--url", default="http://churn-service.localhost")
 parser.add_argument("--rps", type=float, default=5)
 parser.add_argument("--bad", type=float, default=0.0)
 args = parser.parse_args()

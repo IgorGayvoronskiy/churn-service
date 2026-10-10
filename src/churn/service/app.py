@@ -24,14 +24,6 @@ MODEL_INFO = Gauge("churn_model_info", "Model loaded by this pod", ["version"])
 LATENCY_BUCKETS = (0.003, 0.005, 0.0075, 0.01, 0.015, 0.02, 0.03, 0.05, 0.1, 0.25, 0.5, 1)
 
 FEATURE_BUCKETS = {
-    "age": tuple(range(0, 100, 5)),
-    "watch_hours": (0.5, 1, 2, 5, 10, 15, 20, 30, 40, 50, 75, 110),
-    "last_login_days": (0, 1, 2, 3, 5, 7, 10, 15, 20, 30, 45, 60, 90),
-    "monthly_fee": (8.99, 13.99, 17.99),
-    "number_of_profiles": (1, 2, 3, 4, 5),
-    "avg_watch_time_per_day": (0.25, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 16, 24),
-}
-FEATURE_BUCKETS = {
     "age": (20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80),
     "watch_hours": (0.5, 1, 2, 4, 6, 8, 10, 15, 20, 30, 40, 60, 80, 120),
     "last_login_days": (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 90),
