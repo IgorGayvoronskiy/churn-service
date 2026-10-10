@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY artifact/ artifact/
 
 COPY .dvc/config .dvc/config
-COPY data/*.dvc data
+COPY data/*.dvc data/
 RUN uv run --no-sync dvc config core.no_scm true
 
 EXPOSE 8000
