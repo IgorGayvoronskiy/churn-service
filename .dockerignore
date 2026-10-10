@@ -33,7 +33,7 @@ scripts/
 .dvc/cache/
 .dvc/tmp/
 .dvc/config.local
-datasets/*.csv
-datasets/*.parquet
+data/*.csv
+data/*.parquet
 pictures/
 dags/
