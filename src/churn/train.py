@@ -39,7 +39,7 @@ EVAL_METRIC = os.getenv("EVAL_METRIC", "AUC")
 EARLY_STOPPING_ROUNDS = int(os.getenv("EARLY_STOPPING_ROUNDS", "100"))
 
 TOP_N_FEATURES = 10
-MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.002"))
+MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.0002"))
 SEED = 42
 
 NUMERIC = [
