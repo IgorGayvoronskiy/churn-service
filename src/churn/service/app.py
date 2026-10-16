@@ -2,7 +2,6 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
-from typing import Literal
 
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
@@ -11,7 +10,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from starlette.background import BackgroundTask
 
 from churn import db
@@ -29,7 +28,7 @@ FEATURE_BUCKETS = {
     "last_login_days": (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 90),
     "monthly_fee": (8.99, 13.99, 17.99),
     "number_of_profiles": (1, 2, 3, 4, 5, 10),
-    "avg_watch_time_per_day": (0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1, 2, 5, 10, 24, 100),
+    "avg_watch_time_per_day": (0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1, 2, 5, 10, 24),
 }
 FEATURE_HISTS = {
     col: Histogram(f"churn_feature_{col}", f"Distribution of {col} in requests", buckets=b)
@@ -54,11 +53,18 @@ class Features(BaseModel):
     last_login_days: int = Field(ge=0)
     region: str
     device: str
-    monthly_fee: Literal[8.99, 13.99, 17.99]
+    monthly_fee: float
     payment_method: str
-    number_of_profiles:	int = Field(ge=1)
-    avg_watch_time_per_day: float = Field(ge=0)
+    number_of_profiles:	int = Field(ge=1, le=5)
+    avg_watch_time_per_day: float = Field(ge=0, le=24)
     favorite_genre: str
+
+    @field_validator("monthly_fee")
+    @classmethod
+    def validate_monthly_fee(cls, value: float) -> float:
+        if value not in (8.99, 13.99, 17.99):
+            raise ValueError("monthly_fee must be 8.99, 13.99, or 17.99")
+        return value
 
 
 class BatchFeatures(BaseModel):

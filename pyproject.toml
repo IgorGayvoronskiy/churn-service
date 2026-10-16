@@ -1,6 +1,6 @@
 [project]
 name = "churn-service"
-version = "0.4.1"
+version = "0.4.4"
 description = "Churn service"
 requires-python=">=3.11,<3.12"
 

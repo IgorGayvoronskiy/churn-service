@@ -111,6 +111,13 @@ jobs:
           kubectl set image deploy/churn-service api="$IMAGE"
           kubectl rollout status deploy/churn-service --timeout=180s
 
+      - name: мониторинг и DAG
+        run: |
+          kubectl apply -f k8s/monitoring/
+          kubectl -n mlops create configmap airflow-dags --from-file=dags/ \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl -n mlops exec deploy/airflow -- airflow variables set churn_image "$IMAGE"
+
       - name: smoke
         run: |
           set -o pipefail
@@ -139,6 +146,14 @@ jobs:
         run: |
           echo "::group::Поды"
           kubectl get pods -o wide
+          echo "::endgroup::"
+
+          echo "::group::Секреты"
+          kubectl -n mlops get secrets
+          echo "::endgroup::"
+          
+          echo "::group::Ingress"
+          kubectl get ingress -A
           echo "::endgroup::"
 
           echo "::group::События кластера (по времени)"
