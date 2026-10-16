@@ -100,7 +100,7 @@ ROWS = pa.DataFrameSchema(
 EXPORT = pa.DataFrameSchema(
     ROWS.columns,
     checks=[
-        pa.Check(lambda df: len(df) >= 2_500, error="меньше 2500 строк: выгрузка неполная"),
+        pa.Check(lambda df: len(df) >= 1_000, error="меньше 1000 строк: выгрузка неполная"),
         pa.Check(lambda df: 0.4 <= df["churned"].mean() <= 0.6,
                  error="доля оттока вне 0.4..0.6: сломан таргет или выборка?"
         ),

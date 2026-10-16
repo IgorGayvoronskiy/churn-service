@@ -39,7 +39,7 @@ EVAL_METRIC = os.getenv("EVAL_METRIC", "AUC")
 EARLY_STOPPING_ROUNDS = int(os.getenv("EARLY_STOPPING_ROUNDS", "100"))
 
 TOP_N_FEATURES = 10
-MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.0002"))
+MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.002"))
 SEED = 42
 
 NUMERIC = [
@@ -67,6 +67,8 @@ def load_data(path: str) -> pd.DataFrame:
 
 def prepare_features(df: pd.DataFrame):
     df = df.copy()
+    df = df.drop_duplicates()
+    df = df[~(df["avg_watch_time_per_day"] > 24)].copy()
 
     if "customer_id" in df.columns:
         df = df.drop(columns=["customer_id"])
@@ -80,7 +82,9 @@ def prepare_features(df: pd.DataFrame):
         raise ValueError(f"Неожиданные значения таргета: {df[TARGET].unique()[:5]}")
 
     for c in CATEGORICAL:
-        df[c] = df[c].fillna("missing").astype(str)
+        df[c] = df[c].fillna("missing").astype(str).str.strip()
+    
+    df = df.reset_index(drop=True)
 
     X = df.drop(columns=[TARGET])
     y = df[TARGET].astype(int)

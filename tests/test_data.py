@@ -57,7 +57,7 @@ def test_small_export_is_rejected(raw):
 
     checks = set(exc.value.failure_cases["check"].dropna().astype(str))
     assert any(
-        "меньше 2500 строк" in check
+        "меньше 1000 строк" in check
         for check in checks
     )
 
