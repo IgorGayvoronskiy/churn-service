@@ -67,8 +67,8 @@
 
    Повторите DNS-проверку. Она должна вернуть `127.0.0.1`.
 
-   Попробуйте выполнить
-   ```powershell
+   В Git Bash Попробуйте выполнить
+   ```bash
    uv run dvc push
    ```
 
@@ -79,19 +79,27 @@
    NO_PROXY="localhost,127.0.0.1,.localhost" uv run dvc push
    ```
 
-   Если проблема исчезнет, задайте переменную `NO_PROXY` постоянно в Windows:
+   Если проблема исчезнет, задайте переменную `NO_PROXY` постоянно в Windows через PowerShell:
 
    ```powershell
    setx NO_PROXY "localhost,127.0.0.1,.localhost"
    ```
 
-   Затем откройте новый терминал и повторите команду.
+   Затем откройте новый Git Bash терминал и повторите команду.
 
-5. Следующим шагом нужно запустить обучение модели:
+5. Следующим шагом нужно запустить обучение модели.
+   В Git Bash
 
    ```bash
    MLFLOW_TRACKING_URI=http://mlflow.localhost uv run python -m churn.train
    ```
+
+   Если вы получили ошибку кодировки, ввёдите следующую комманду в терминале:
+
+   ```bash
+   export PYTHONIOENCODING=utf-8
+   ```
+   и повторите обучение.
 
 6. Теперь мы готовы поднять наш сервис.
    Для этого перейдите в GitHub -> Settings -> Actions -> Runners. Создайте новый self-hosted runner на Linux и сохраните токен, который вы можете найти в поле Configure.
@@ -99,7 +107,7 @@
    Далее запустите раннер:
 
    ```bash
-   REPO_URL=https://github.com/<логин>/<название_вашего_репозитория> RUNNER_TOKEN=<токен> /scripts/runner-up.sh
+   REPO_URL=https://github.com/<логин>/<название_вашего_репозитория> RUNNER_TOKEN=<токен> ./scripts/runner_up.sh
    ```
 
    Также перед запуском Workflow перейдите в GitHub -> Settings -> Secrets and variables -> Actions создайте новый секрет репозитория с именем `DB_PASSWORD`.
@@ -108,7 +116,7 @@
 
 7. Отправим запрос для предсказания в наш сервис:
 
-   ```powershell
+   ```bash
    curl.exe -X POST "http://churn-service.localhost/v1/predict" -H "Content-Type: application/json" -d "@good.json"
    ```
 

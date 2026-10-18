@@ -165,7 +165,7 @@ mlflow.exceptions.RestException: INVALID_PARAMETER_VALUE: Registered model alias
 Запрос проходит путь:
 
 ```
-браузер → порт 80 хоста → порт 80 kind-control-plane → traefik NodePort 30080 → сервис mlflow:5000 → под mlflow:5000
+браузер → порт 80 хоста → traefik NodePort 30080 → сервис mlflow:5000 → под mlflow:5000
 ```
 
 - `--allowed-hosts` задаёт значения хостов, по которым можно обращаться к MLflow.
