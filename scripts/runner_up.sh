@@ -10,8 +10,8 @@
 
 set -euo pipefail
 
-RUNNER_NAME="${RUNNER_NAME:-churn-service-codespace}"
-RUNNER_LABELS="${RUNNER_LABELS:-kind-codespace}"
+RUNNER_NAME="${RUNNER_NAME:-churn-service}"
+RUNNER_LABELS="${RUNNER_LABELS:-kind}"
 RUNNER_IMAGE="${RUNNER_IMAGE:-ghcr.io/actions/actions-runner:2.337.0}"
 CONTAINER="${CONTAINER:-gh-runner-codespace}"
 NETWORK="${NETWORK:-kind}"

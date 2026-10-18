@@ -1,43 +1,77 @@
-# Команды:
-- uv sync
-- uv run pytest
-- docker compose up -d --build
-- kind create cluster --name mlpro
+# О сервисе
+Сервис предназначен для прогнозирования оттока пользователей стримингового сервиса на основе их характеристик и поведения. Для каждого пользователя модель оценивает вероятность ухода, что позволяет выявлять клиентов с высоким риском оттока и использовать эти прогнозы для разработки мер по их удержанию. Модель доступна для использования через API, разработанный на FastAPI, а развёртывание и управление сервисом осуществляются в Kubernetes.<br>
 
-# Скриншоты:
-- pytest
-  <img width="1351" height="563" alt="image_2026-09-15_19-22-47" src="https://github.com/user-attachments/assets/d44426c0-251b-4adb-aef1-9ff232a5b1e3" />
-- SELECT запрос из логов
-  <img width="1256" height="176" alt="image_2026-09-15_20-36-59" src="https://github.com/user-attachments/assets/744f0fdf-597d-4b0a-9f17-651263151e83" />
-- kubectl get pods
-  <img width="751" height="111" alt="image_2026-09-15_21-31-52" src="https://github.com/user-attachments/assets/6ca701ac-938e-4b68-8c3b-76673390e186" />
-- predict через port-forward
-  <img width="1091" height="105" alt="image_2026-09-15_21-34-09" src="https://github.com/user-attachments/assets/672c66ab-63d2-4624-b02f-88025ccd7531" />
-  <img width="1260" height="103" alt="image_2026-09-15_21-33-48" src="https://github.com/user-attachments/assets/bad03a5a-3dcc-4851-9993-4927b57de9ae" />
-- k9s
-  <img width="1230" height="763" alt="image_2026-09-15_21-38-50" src="https://github.com/user-attachments/assets/6a221f03-3eb5-4458-a260-73bb9b7f7183" />
+В качестве модели машинного обучения используется CatBoost - алгоритм градиентного бустинга над решающими деревьями, подходящий для табличных данных и работы с категориальными признаками. Жизненный цикл модели автоматизирован с помощью Airflow: он включает валидацию данных, переобучение и обновление модели. Эксперименты и версии моделей отслеживаются через MLflow, а версионирование датасетов организовано с помощью DVC и S3-совместимого хранилища RustFS. Для мониторинга состояния сервиса и его метрик используются Prometheus и Grafana, что обеспечивает наблюдаемость и упрощает диагностику проблем в работающей системе.
 
-# Звёздочка 1
-| Прогон | Метод | Endpoint | RPS | Median, ms | p95, ms | Max, ms | Доля ошибок |
-|---:|:---:|:---|---:|---:|---:|---:|---:|
-| 10 | GET | `/health` | 0.79 | 4 | 9 | 19.19 | 0.00% |
-| 10 | POST | `/v1/predict` | 4.22 | 7 | 15 | 108.30 | 0.00% |
-| 50 | GET | `/health` | 4.39 | 5 | 31 | 64.28 | 0.00% |
-| 50 | POST | `/v1/predict` | 19.85 | 9 | 27 | 86.27 | 0.00% |
-| 100 | GET | `/health` | 7.72 | 5 | 14 | 125.48 | 0.00% |
-| 100 | POST | `/v1/predict` | 41.22 | 9 | 30 | 202.71 | 0.00% |
+# Quickstart
+- Сперва вам понадобятся установленные WSL2 и Docker Desktop на вашей машине.
+  WSL2 (PowerShell от администратора, затем перезагрузка)
+  ```
+  wsl --install
+  wsl --set-default-version 2
+  ```
+  Docker Desktop: https://www.docker.com/products/docker‐desktop/
+  при установке оставить галочку "Use WSL 2 instead of Hyper‐V"
+  после запуска: Settings‐> General‐> Use the WSL 2 based engine
 
-Из таблицы видно, что уже при нагрузке в 10 пользователей значение p95 заметно превышает медианное время ответа: примерно в 2 раза для GET и POST-запросов. Также при переходе от 50 к 100 пользователям RPS продолжает расти для обоих типов запросов, что говорит о том, что сервис на данном диапазоне нагрузки ещё не достиг предельной производительности. На протяжении всех трёх прогонов доля ошибок составила 0%.
+- Далее выполните fork GitHub репозитория https://github.com/IgorGayvoronskiy/churn-service
+  а затем в PowerShell клонируйте его на своё устройство:
+  ```
+  git clone https://github.com/<GITHUB_USERNAME>/churn-service.git
+  cd churn-service
+  ```
 
-# Звёздочка 2
-| Кол-во строк | Median latency, ms |
-|---:|:---:|
-|1|4.92|
-|500|14.61|
+- Далее в директории с проектом запустите скрипт для установки зависимостей:
+  ```
+  powershell -ExecutionPolicy Bypass -File .\scripts\preparation.ps1
+  ```
 
-Предсказание на батче из 500 строк оказалось опчти в 3 раза дороже 1-й строки. Отношение так мало, потому что модель вызывается всего 1 раз и при этом она может эффективно обрабатывать батч из множества строк.
+  А затем в Git bash выполните скрипт подъёма платформы:
+  ```
+  S3_KEY=... S3_SECRET=... "C:\Program Files\Git\bin\bash.exe" platform/up.sh
+  ```
 
-# Звёздочка 3
-<img width="1221" height="135" alt="image_2026-09-17_11-20-54" src="https://github.com/user-attachments/assets/0ec2d30e-4c5e-43fe-8c99-c8685060ee17" />
+- После того, как все зависимости были успешно установлены, а платформа поднята, выполните скрипт установки данных:
+  ```
+  uv run python get_churn_data.py
+  ```
 
-При выкатке версии 1.1 Kubernetes постепенно создавал новые поды с обновлённым образом и удалял старые, не останавливая Deployment целиком. При откате Kubernetes постепенно заменил поды с новой версией на поды с предыдущей версией образа. При этом сервис не прерывал работу, так как новые поды запускались до удаления старых, и во время обновления оставалась доступная реплика.
+  Далее настройте s3 хранилище для dvc:
+  ```
+  uv run dvc remote modify --local laptop access_key_id <Ваш S3_KEY>
+  uv run dvc remote modify --local laptop secret_access_key <Ваш S3_SECRET>
+  uv run dvc push
+  ```
+
+- Следующим шагом нужно запустить обучение модели:
+  ```
+  MLFLOW_TRACKING_URI=http://mlflow.localhost uv run python -m churn.train
+  ```
+
+- Теперь мы готовы поднять наш сервис. 
+  Для этого перейдите в GitHub -> Settings -> Actions -> Runners. Создайте новый self-hosted runner на Linux и сохраните токен, который вы можете найти в поле Configure.
+
+  Далее запустите раннер:
+  ```
+  REPO_URL=https://github.com/<логин>/churn-service RUNNER_TOKEN=<токен> /scripts/runner-up.sh
+  ```
+
+  Также перед запуском Workflow перейдите в GitHub -> Settings -> Secrets and variables -> Actions создайте новый секрет репозитория с именем DB_PASSWORD.
+
+  Затем перейдите в GitHub Actions и в поле workflows выберите ci. Для запуска workflow нажмите на кнопку Run workflow.
+
+- Отправим запрос для предсказания в наш сервис:
+  ```
+  curl.exe -X POST "http://churn-service.localhost/v1/predict" -H "Content-Type: application/json" -d "@good.json"
+  ```
+  Ответ с кодом 200 означает, что сервис успешно работает.
+
+# Адреса интерфейсов
+1. churn-service - http://churn-service.localhost
+2. MLflow - http://mlflow.localhost
+3. Airflow - http://airflow.localhost
+4. Grafana - http://grafana.localhost
+5. s3-console - http://s3-console.localhost
+
+# Ручной запуск переобучения
+Для этого перейдите в Airflow. Во вкладке Dags выберите churn_retrain dag, нажмите кнопку "Запустить" и, выбрав необходимые параметры, запустите обучение.

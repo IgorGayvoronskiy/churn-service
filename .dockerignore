@@ -10,18 +10,6 @@ platform/
 notebooks/
 locustfile.py
 catboost_info/
-run10_exceptions.csv
-run10_failures.csv
-run10_stats_history.csv
-run10_stats.csv
-run50_exceptions.csv
-run50_failures.csv
-run50_stats_history.csv
-run50_stats.csv
-run100_exceptions.csv
-run100_failures.csv
-run100_stats_history.csv
-run100_stats.csv
 README.md
 hw2.md
 good.json
@@ -35,3 +23,4 @@ data/*.csv
 data/*.parquet
 pictures/
 dags/
+data_download/
