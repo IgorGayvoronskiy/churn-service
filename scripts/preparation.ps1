@@ -244,4 +244,4 @@ foreach ($image in $IMAGES) {
 }
 
 Write-Host "`nГотово. Откройте НОВОЕ окно терминала (чтобы подхватился PATH) и запустите платформу из Git Bash:" -ForegroundColor Green
-Write-Host "  & `"$gitBash`" platform/up.sh" -ForegroundColor Green
+Write-Host "  & S3_KEY=... S3_SECRET=... `"$gitBash`" platform/up.sh" -ForegroundColor Green
