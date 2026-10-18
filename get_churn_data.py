@@ -1,8 +1,7 @@
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import kagglehub
-
 
 DATASET_ID = "abdulwadood11220/netflix-customer-churn-dataset"
 PROJECT_DIR = Path(__file__).resolve().parent
