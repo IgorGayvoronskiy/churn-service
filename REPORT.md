@@ -130,3 +130,10 @@
 Проблема с кодировкой при запуске `MLFLOW_TRACKING_URI=http://mlflow.localhost uv run python -m churn.train` в Git Bash.
 
 Починил выполнением команды `export PYTHONIOENCODING=utf-8`
+
+# Переделки
+
+| Пункт фидбека | Что сделано | Доказательство |
+|---|---|---|
+| Фидбек по дз4, пункт 1| Исправлен Quickstart: запуск `bash platform/up.sh` с явными ключами `key` и `secret`; те же ключи явно указаны в `dvc remote modify`. Команды `Add-Content` и `ipconfig /flushdns` разделены на разные строки. Добавлен шаг включения GitHub Actions в форке. | [Коммит](https://github.com/IgorGayvoronskiy/churn-service/commit/9a3f0192c1c2fe1a699ad182ffbee4e1bc465352) |
+| Фидбек по дз4, пункт 2 | В `REPORT.md` отчёт по пунктам 1–6 оформлен в виде таблицы с доказательствами выполнения. | [Коммит](https://github.com/IgorGayvoronskiy/churn-service/commit/9a3f0192c1c2fe1a699ad182ffbee4e1bc465352) |
