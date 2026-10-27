@@ -96,7 +96,6 @@ ROWS = pa.DataFrameSchema(
     strict=True,
 )
 
-# правила для выгрузки целиком: объём и распределение, на образце не проверить
 EXPORT = pa.DataFrameSchema(
     ROWS.columns,
     checks=[

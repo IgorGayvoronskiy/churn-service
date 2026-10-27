@@ -27,7 +27,15 @@
    cd <название_вашего_репозитория>
    ```
 
-3. Далее в директории с проектом запустите скрипт для установки зависимостей:
+3. Перед настройкой окружения необходимо включить GitHub Actions в форке репозитория.
+
+   1. Откройте свой форк на GitHub и перейдите в **Settings → Actions → General**.
+   2. В разделе **Actions permissions** разрешите использование GitHub Actions, выбрав **Allow all actions and reusable workflows**.
+   3. Нажмите **Save**, если настройки были изменены.
+
+   После этого GitHub Actions будет доступен для запуска CI/CD workflow проекта.
+
+4. Далее в директории с проектом запустите скрипт для установки зависимостей:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\preparation.ps1
@@ -36,10 +44,10 @@
    А затем в Git bash в корне репозитория выполните скрипт подъёма платформы:
 
    ```bash
-   S3_KEY=... S3_SECRET=... "C:\Program Files\Git\bin\bash.exe" platform/up.sh
+   S3_KEY=key S3_SECRET=secret "C:\Program Files\Git\bin\bash.exe" platform/up.sh
    ```
 
-4. После того, как все зависимости были успешно установлены, а платформа поднята, скачайте и закэшируйте данные:
+5. После того, как все зависимости были успешно установлены, а платформа поднята, скачайте и закэшируйте данные:
 
    ```bash
    uv run python get_churn_data.py
@@ -49,8 +57,8 @@
    Далее настройте s3 хранилище для dvc:
 
    ```bash
-   uv run dvc remote modify --local laptop access_key_id <Ваш S3_KEY>
-   uv run dvc remote modify --local laptop secret_access_key <Ваш S3_SECRET>
+   uv run dvc remote modify --local laptop access_key_id key
+   uv run dvc remote modify --local laptop secret_access_key secret
    ```
 
    Перед первым выполнением `dvc push` убедитесь, что имя хранилища корректно разрешается в вашей среде.
@@ -62,7 +70,9 @@
    Должно вывести `127.0.0.1`, если вы получили `getaddrinfo failed` откройте PowerShell от имени администратора и выполните:
 
    ```powershell
-   Add-Content -Path "$env:SystemRoot\System32\drivers\etc\hosts" -Value "`n127.0.0.1 s3.localhost s3-console.localhost mlflow.localhost airflow.localhost grafana.localhost churn-service.localhost" ipconfig /flushdns
+   Add-Content -Path "$env:SystemRoot\System32\drivers\etc\hosts" -Value "`n127.0.0.1 s3.localhost s3-console.localhost mlflow.localhost airflow.localhost grafana.localhost churn-service.localhost"
+
+   ipconfig /flushdns
    ```
 
    Повторите DNS-проверку. Она должна вернуть `127.0.0.1`.
@@ -87,7 +97,7 @@
 
    Затем откройте новый Git Bash терминал и повторите команду.
 
-5. Следующим шагом нужно запустить обучение модели.
+6. Следующим шагом нужно запустить обучение модели.
    В Git Bash
 
    ```bash
@@ -101,7 +111,7 @@
    ```
    и повторите обучение.
 
-6. Теперь мы готовы поднять наш сервис.
+7. Теперь мы готовы поднять наш сервис.
    Для этого перейдите в GitHub -> Settings -> Actions -> Runners. Создайте новый self-hosted runner на Linux и сохраните токен, который вы можете найти в поле Configure.
 
    Далее запустите раннер:
@@ -114,7 +124,7 @@
 
    Затем перейдите в GitHub Actions и в поле workflows выберите ci. Для запуска workflow нажмите на кнопку Run workflow.
 
-7. Отправим запрос для предсказания в наш сервис:
+8. Отправим запрос для предсказания в наш сервис:
 
    ```bash
    curl.exe -X POST "http://churn-service.localhost/v1/predict" -H "Content-Type: application/json" -d "@good.json"
